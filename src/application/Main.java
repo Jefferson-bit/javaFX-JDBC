@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package application;
 
-package javafx.jdbc;
-
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+
 /**
  *
  * @author crash
@@ -19,14 +20,18 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("Views.fxml"));
-        Scene scene = new Scene(root);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Views.fxml"));
+            Parent parent = loader.load();
+            Scene mainScene = new Scene(parent);
+            stage.setScene(mainScene);
+            stage.setTitle("Sample javaFX application");
+            stage.show();
 
-        stage.setTitle("Hello World!");
-        stage.setScene(scene);
-        stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 
     public static void main(String[] args) {
         launch(args);
