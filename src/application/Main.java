@@ -12,12 +12,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 
-/**
- *
- * @author crash
- */
+
 public class Main extends Application {
 
+    private static Scene mainScene;
+    
     @Override
     public void start(Stage stage) throws Exception {
         try {
@@ -26,7 +25,8 @@ public class Main extends Application {
             
             scrollpane.setFitToHeight(true);
             scrollpane.setFitToWidth(true);
-            Scene mainScene = new Scene(scrollpane);
+            
+            mainScene = new Scene(scrollpane);
             stage.setScene(mainScene);
             stage.setTitle("Sample javaFX application");
             stage.show();
@@ -35,7 +35,11 @@ public class Main extends Application {
             e.printStackTrace();
         }
     }
-
+    public static Scene getMainScene(){
+        return mainScene;
+    }
+    
+    
     public static void main(String[] args) {
         launch(args);
     }

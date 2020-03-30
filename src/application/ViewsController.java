@@ -5,15 +5,31 @@
  */
 package application;
 
+import gui.Alerts;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.VBox;
 
 
 public class ViewsController implements Initializable {
 
+    @FXML
+    private Button botao;
+    
+    public void actionBotao(){
+        
+    }
+    
     @FXML
     private MenuItem menuItemSeller;
     
@@ -34,13 +50,42 @@ public class ViewsController implements Initializable {
     }
     @FXML
     public void onMenuItemAboutAction(){
-            System.out.println("Hello About");
+        loadView("About.fxml");
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
      
-        
+      
     }    
+    //synchronized serve para o metodo não ser interrompido, caso ocorra alguma interrupção ou um comportamento inesperado
+    //assim ele não sera interrompido pelo multiThread
+    private synchronized void loadView(String absoluteName){
+        
+        try {
+            //pegando a Tela
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+            VBox newVbox =  loader.load();
+            //
+            Scene mainScene = Main.getMainScene();
+            //pegando a raiz que é o scrollpane e o content, da views.fxml, 
+            VBox mainVBox = (VBox) ((ScrollPane) mainScene.getRoot()).getContent();
+            //pegando os filhos do VBOX, pegando o primeiro filho da Vbox
+            Node mainMenu = mainVBox.getChildren().get(0);
+            
+            //limpand todos os filhos do mainVBOX
+            mainVBox.getChildren().clear();
+            //adicionando o mainMenu
+            mainVBox.getChildren().add(mainMenu);
+            //adicionando uma coleção filhos do newVbox
+            mainVBox.getChildren().addAll(newVbox.getChildren());
+            
+            
+        } catch (IOException ex) {
+            Alerts.alertShow("IO Exception", "Error Load view", ex.getMessage(), Alert.AlertType.ERROR);
+        }
+        
+        
+    }
     
 }
