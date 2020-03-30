@@ -9,6 +9,8 @@ import gui.Alerts;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -66,17 +68,22 @@ public class ViewsController implements Initializable {
             //pegando a Tela
             FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
             VBox newVbox = loader.load();
+
             //
             Scene mainScene = Main.getMainScene();
+
             //pegando a raiz que é o scrollpane e o content, da views.fxml, 
             VBox mainVBox = (VBox) ((ScrollPane) mainScene.getRoot()).getContent();
+
             //pegando os filhos do VBOX, pegando o primeiro filho da Vbox
             Node mainMenu = mainVBox.getChildren().get(0);
 
             //limpand todos os filhos do mainVBOX
             mainVBox.getChildren().clear();
+
             //adicionando o mainMenu
             mainVBox.getChildren().add(mainMenu);
+
             //adicionando uma coleção filhos do newVbox
             mainVBox.getChildren().addAll(newVbox.getChildren());
 
@@ -85,5 +92,5 @@ public class ViewsController implements Initializable {
         }
 
     }
-
+        
 }
