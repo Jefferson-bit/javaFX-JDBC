@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -26,7 +28,6 @@ import javafx.stage.Stage;
 import model.entities.Department;
 
 public class DepartmentListController implements Initializable, DataChangeListener {
-
 
     private DepartmentService service;
 
@@ -38,6 +39,9 @@ public class DepartmentListController implements Initializable, DataChangeListen
 
     @FXML
     private TableColumn<Department, String> tableColumnName;
+
+    @FXML
+    private TableColumn<Department, Department> tableColumnEDIT;
 
     @FXML
     private Button btNew;
@@ -69,7 +73,7 @@ public class DepartmentListController implements Initializable, DataChangeListen
         tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
     }
 
-    public void updateTablwView() {
+    public void updateTableView() {
         //programação defensiva, caso o programador esquece de inserir dados no service
         if (service == null) {
             throw new IllegalStateException("Serbvice was null");
@@ -77,7 +81,7 @@ public class DepartmentListController implements Initializable, DataChangeListen
         List<Department> list = service.findAll();
         obsList = FXCollections.observableArrayList(list);
         tableViewDepartment.setItems(obsList);
-
+        initEditButtons();
     }
 
     public void createDialogForm(Department obj, String absoluteName, Stage parentStage) {
@@ -87,12 +91,12 @@ public class DepartmentListController implements Initializable, DataChangeListen
             Pane pane = loader.load();
             //injetando todas as dependencias 
             DepartmentFormController controller = loader.getController();
-            controller.setDepartmentService(new DepartmentService());
+            
             controller.setDepartment(obj);
+            controller.setDepartmentService(new DepartmentService());
             controller.subsCribleDateChangeListener(this);
-            controller.updateDepartment();
-            
-            
+            controller.updateFormData();
+
             //instanciando um novo stage, para ser um palco na frente do outro
             Stage dialogStage = new Stage();
             //Colocando titulo na janela
@@ -108,7 +112,7 @@ public class DepartmentListController implements Initializable, DataChangeListen
             dialogStage.initModality(Modality.WINDOW_MODAL);
             //Carregando tela do formulario
             dialogStage.showAndWait();
-            
+
         } catch (IOException ex) {
             Logger.getLogger(DepartmentListController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -116,10 +120,31 @@ public class DepartmentListController implements Initializable, DataChangeListen
     }
     //esse metodo aqui, vai ser responsável por atualizar minha lista
     //temos que inserir a dependencia
-    
+
     @Override
     public void onDataChenged() {
-        updateTablwView();
+        updateTableView();
+    }
+
+    private void initEditButtons() {
+
+        tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+        tableColumnEDIT.setCellFactory(param -> new TableCell<Department, Department>() {
+            private final Button button = new Button("edit");
+
+            @Override
+            protected void updateItem(Department obj, boolean empty) {
+                super.updateItem(obj, empty);
+                if (obj == null) {
+                    setGraphic(null);
+                    return;
+                }
+                setGraphic(button);
+                button.setOnAction(
+                        event -> createDialogForm(obj, "DepartmentForm.fxml", Utils.currentStagem(event)));
+
+            }
+        });
     }
 
 }

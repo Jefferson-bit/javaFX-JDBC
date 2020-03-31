@@ -60,6 +60,7 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
                     + "WHERE Id=?");
             stm.setString(1, obj.getName());
             stm.setInt(2, obj.getId());
+            stm.executeUpdate();
         } catch (SQLException ex) {
             throw new DBException("erro ao atualizar" + ex.getMessage());
         } finally {

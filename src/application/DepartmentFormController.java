@@ -33,8 +33,8 @@ public class DepartmentFormController implements Initializable {
 
     private DepartmentService service;
 
-    private List<DataChangeListener> dataChangeListener  = new ArrayList<>();
-    
+    private List<DataChangeListener> dataChangeListener = new ArrayList<>();
+
     @FXML
     private TextField txtId;
 
@@ -57,53 +57,55 @@ public class DepartmentFormController implements Initializable {
         if (service == null) {
             throw new IllegalStateException("Service was null");
         }
-    try{
-        entityes = getFormData();
-        service.saveOrUpdate(entityes);
-        Utils.currentStagem(event).close();
-        notifyDataChangeListener();
-    }catch(ValidationException e){
+        try {
+            entityes = getFormData();
+            service.saveOrUpdate(entityes);
+            Utils.currentStagem(event).close();
+            notifyDataChangeListener();
+        } catch (ValidationException e) {
             setErrorMessages(e.getErros());
-    }catch(DBException e){
-        Alerts.alertShow("IO Excpetion", "error button", e.getMessage(), Alert.AlertType.ERROR);
+        } catch (DBException e) {
+            Alerts.alertShow("IO Excpetion", "error button", e.getMessage(), Alert.AlertType.ERROR);
+        }
+
     }
-    
-  }
+
     //esse metodo ele é responsavel por notificar a minha lista quando houver a inserção de dados
     private void notifyDataChangeListener() {
-        for(DataChangeListener listener: dataChangeListener){
+        for (DataChangeListener listener : dataChangeListener) {
             listener.onDataChenged();
         }
-    }    
+    }
+
     //metodo responsável por escreve na minha lista
-    public void subsCribleDateChangeListener(DataChangeListener listener){
+    public void subsCribleDateChangeListener(DataChangeListener listener) {
         dataChangeListener.add(listener);
     }
-    
+
     @FXML
     private Department getFormData() {
         Department obj = new Department();
-        
+
         ValidationException exception = new ValidationException("Validation Error");
-              
+
         obj.setId(Utils.tryParseToInt(txtId.getText()));
         //Verificando se o campo está vazio
-        if(txtName.getText() == null || txtName.getText().trim().equals("")){
+        if (txtName.getText() == null || txtName.getText().trim().equals("")) {
             exception.addErrors("name", "Field can't be empty");
         }
         obj.setName(txtName.getText());
-      
-        if(exception.getErros().size() > 0){
+
+        if (exception.getErros().size() > 0) {
             throw exception;
-        }   
-        return obj;     
+        }
+        return obj;
     }
 
     @FXML
     public void onBtCancelAction(ActionEvent event) {
         Utils.currentStagem(event).close();
     }
-    
+
     public void setDepartment(Department entityes) {
         this.entityes = entityes;
     }
@@ -122,15 +124,19 @@ public class DepartmentFormController implements Initializable {
         Constraints.setTextFieldMaxLength(txtName, 30);
     }
 
-    public void updateDepartment() {
+    public void updateFormData() {
+        if(entityes == null){
+            throw new IllegalStateException("Entityes was null");
+        }
         txtId.setText(String.valueOf(entityes.getId()));
         txtName.setText(entityes.getName());
-            
+
     }
-    private void setErrorMessages(Map<String,String> errors){
+
+    private void setErrorMessages(Map<String, String> errors) {
         Set<String> fields = errors.keySet();
-        
-        if(fields.contains("name")){
+
+        if (fields.contains("name")) {
             labelErroName.setText(errors.get("name"));
         }
     }

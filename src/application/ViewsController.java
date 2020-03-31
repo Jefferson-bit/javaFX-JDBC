@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -28,6 +26,7 @@ public class ViewsController implements Initializable {
 
     @FXML
     private Button botao;
+
     @FXML
     public void actionBotao() {
 
@@ -49,15 +48,16 @@ public class ViewsController implements Initializable {
 
     @FXML
     public void onMenuItemDepartmentAction() {
-        loadView("DepartmentList.fxml", (DepartmentListController controller) ->{
-        controller.setDepartmentService(new DepartmentService());
-        controller.updateTablwView();
+        loadView("DepartmentList.fxml", (DepartmentListController controller) -> {
+            controller.setDepartmentService(new DepartmentService());
+            controller.updateTableView();
         });
     }
 
     @FXML
     public void onMenuItemAboutAction() {
-        loadView("About.fxml", x -> {});
+        loadView("About.fxml", x -> {
+        });
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ViewsController implements Initializable {
 
     //synchronized serve para o metodo não ser interrompido, caso ocorra alguma interrupção ou um comportamento inesperado
     //assim ele não sera interrompido pelo multiThread
-    private synchronized <T> void loadView(String absoluteName, Consumer<T> InitializingAction )  {
+    private synchronized <T> void loadView(String absoluteName, Consumer<T> InitializingAction) {
         try {
             //pegando a Tela
             FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
@@ -90,14 +90,13 @@ public class ViewsController implements Initializable {
 
             //adicionando uma coleção filhos do newVbox
             mainVBox.getChildren().addAll(newVbox.getChildren());
-           T controller = loader.getController();
+            T controller = loader.getController();
             InitializingAction.accept(controller);
-            
+
         } catch (IOException ex) {
             Alerts.alertShow("IO Exception", "Error Load view", ex.getMessage(), Alert.AlertType.ERROR);
         }
 
-    }   
-     
-        
+    }
+
 }
