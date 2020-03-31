@@ -6,8 +6,6 @@
 package Model.services;
 
 
-import Model.dao.DepartmentDaoJDBC;
-import java.util.ArrayList;
 import java.util.List;
 import model.Dao.DaoFactory;
 import model.Dao.DepartmentDAO;
@@ -20,5 +18,14 @@ public class DepartmentService {
     
     public List<Department> findAll(){
         return dao.findAll();
+    }
+    //estamos inserindo ou atualizando, caso ID for nulo, ele entra no else, 
+    //chamando o metodo de atualização
+    public void  saveOrUpdate(Department obj){
+        if(obj.getId() == null){
+            dao.insert(obj);
+        }else{
+            dao.update(obj);
+        }
     }
 }

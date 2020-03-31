@@ -60,6 +60,7 @@ public class DepartmentListController implements Initializable {
     }
 
     private void initializaNode() {
+        //colocando nomes nas colunas
         tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
@@ -68,6 +69,7 @@ public class DepartmentListController implements Initializable {
     }
 
     public void updateTablwView() {
+        //programação defensiva, caso o programador esquece de inserir dados no service
         if (service == null) {
             throw new IllegalStateException("Serbvice was null");
         }
@@ -83,9 +85,10 @@ public class DepartmentListController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
             Pane pane = loader.load();
             
-            DepartmentListController controller = loader.getController();
-            controller.setDepartmentService(service);
-            controller.updateTablwView();
+            DepartmentFormController controller = loader.getController();
+            controller.setDepartmentService(new DepartmentService());
+            controller.setDepartment(obj);
+            controller.updateDepartment();
             
             //instanciando um novo stage, para ser um palco na frente do outro
             Stage dialogStage = new Stage();
