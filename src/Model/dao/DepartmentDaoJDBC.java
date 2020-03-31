@@ -7,6 +7,7 @@ package Model.dao;
 
 import Dados.Conexao;
 import Dados.DBException;
+import Dados.DbIntegrityException;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.ResultSetImpl;
@@ -73,12 +74,12 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
     public void deletById(Integer id) {
         PreparedStatement stm = null;
         try {
-            stm = (PreparedStatement) con.prepareStatement("DELETE FROM department WHERE id=?");
+            stm = (PreparedStatement) con.prepareStatement("DELETE FROM department WHERE Id=?");
             stm.setInt(1, id);
             stm.executeUpdate();
 
         } catch (SQLException ex) {
-            throw new DBException("Erro ao excluir");
+            throw new DbIntegrityException("Erro ao Excluir" + ex.getMessage());
         } finally {
             Conexao.closeStatement(stm);
         }
