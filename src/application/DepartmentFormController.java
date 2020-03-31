@@ -9,6 +9,8 @@ import Model.services.DepartmentService;
 import gui.Constraints;
 import gui.Utils;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,15 +19,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Department;
+import gui.DataChangeListener;
 
 public class DepartmentFormController implements Initializable {
 
-    @FXML
     private Department entityes;
 
-    @FXML
     private DepartmentService service;
 
+    private List<DataChangeListener> dataChangeListener  = new ArrayList<>();
+    
     @FXML
     private TextField txtId;
 
@@ -52,9 +55,22 @@ public class DepartmentFormController implements Initializable {
         entityes = getFormData();
         service.saveOrUpdate(entityes);
         Utils.currentStagem(event).close();
-
+        notifyDataChangeListener();
     }
-
+    //esse metodo ele é repsonsavel por notificar a minha lista quando houver a inserção de dados
+    //
+    private void notifyDataChangeListener() {
+        for(DataChangeListener listener: dataChangeListener){
+            listener.onDataChenged();
+        }
+    }    
+    //metodo responsável por escreve na minha lista
+    public void subsCribleDateChangeListener(DataChangeListener listener){
+        dataChangeListener.add(listener);
+    }
+    
+    
+    
     @FXML
     private Department getFormData() {
         Department obj = new Department();
@@ -67,7 +83,7 @@ public class DepartmentFormController implements Initializable {
     public void onBtCancelAction(ActionEvent event) {
         Utils.currentStagem(event).close();
     }
-
+    
     public void setDepartment(Department entityes) {
         this.entityes = entityes;
     }
@@ -90,5 +106,7 @@ public class DepartmentFormController implements Initializable {
         txtId.setText(String.valueOf(entityes.getId()));
         txtName.setText(entityes.getName());
     }
+
+
 
 }

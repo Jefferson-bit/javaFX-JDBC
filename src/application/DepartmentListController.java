@@ -1,6 +1,7 @@
 package application;
 
 import Model.services.DepartmentService;
+import gui.DataChangeListener;
 import gui.Utils;
 import java.io.IOException;
 import java.net.URL;
@@ -24,9 +25,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entities.Department;
 
-public class DepartmentListController implements Initializable {
+public class DepartmentListController implements Initializable, DataChangeListener {
 
-    @FXML
+
     private DepartmentService service;
 
     @FXML
@@ -84,11 +85,13 @@ public class DepartmentListController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
             Pane pane = loader.load();
-            
+            //injetando todas as dependencias 
             DepartmentFormController controller = loader.getController();
             controller.setDepartmentService(new DepartmentService());
             controller.setDepartment(obj);
+            controller.subsCribleDateChangeListener(this);
             controller.updateDepartment();
+            
             
             //instanciando um novo stage, para ser um palco na frente do outro
             Stage dialogStage = new Stage();
@@ -110,6 +113,13 @@ public class DepartmentListController implements Initializable {
             Logger.getLogger(DepartmentListController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+    //esse metodo aqui, vai ser responsável por atualizar minha lista
+    //temos que inserir a dependencia
+    
+    @Override
+    public void onDataChenged() {
+        updateTablwView();
     }
 
 }

@@ -28,7 +28,7 @@ public class ViewsController implements Initializable {
 
     @FXML
     private Button botao;
-
+    @FXML
     public void actionBotao() {
 
     }
