@@ -1,7 +1,7 @@
 
 package application;
 
-import Model.entities.Department;
+
 import Model.services.DepartmentService;
 import java.net.URL;
 import java.util.List;
@@ -15,6 +15,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import model.entities.Department;
 
 
 public class DepartmentListController implements Initializable {
