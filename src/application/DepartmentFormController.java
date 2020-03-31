@@ -5,7 +5,10 @@
  */
 package application;
 
+import Dados.DBException;
+import Model.exception.ValidationException;
 import Model.services.DepartmentService;
+import gui.Alerts;
 import gui.Constraints;
 import gui.Utils;
 import java.net.URL;
@@ -20,6 +23,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Department;
 import gui.DataChangeListener;
+import java.util.Map;
+import java.util.Set;
+import javafx.scene.control.Alert;
 
 public class DepartmentFormController implements Initializable {
 
@@ -51,14 +57,19 @@ public class DepartmentFormController implements Initializable {
         if (service == null) {
             throw new IllegalStateException("Service was null");
         }
-
+    try{
         entityes = getFormData();
         service.saveOrUpdate(entityes);
         Utils.currentStagem(event).close();
         notifyDataChangeListener();
+    }catch(ValidationException e){
+            setErrorMessages(e.getErros());
+    }catch(DBException e){
+        Alerts.alertShow("IO Excpetion", "error button", e.getMessage(), Alert.AlertType.ERROR);
     }
-    //esse metodo ele é repsonsavel por notificar a minha lista quando houver a inserção de dados
-    //
+    
+  }
+    //esse metodo ele é responsavel por notificar a minha lista quando houver a inserção de dados
     private void notifyDataChangeListener() {
         for(DataChangeListener listener: dataChangeListener){
             listener.onDataChenged();
@@ -69,14 +80,23 @@ public class DepartmentFormController implements Initializable {
         dataChangeListener.add(listener);
     }
     
-    
-    
     @FXML
     private Department getFormData() {
         Department obj = new Department();
+        
+        ValidationException exception = new ValidationException("Validation Error");
+              
         obj.setId(Utils.tryParseToInt(txtId.getText()));
+        //Verificando se o campo está vazio
+        if(txtName.getText() == null || txtName.getText().trim().equals("")){
+            exception.addErrors("name", "Field can't be empty");
+        }
         obj.setName(txtName.getText());
-        return obj;
+      
+        if(exception.getErros().size() > 0){
+            throw exception;
+        }   
+        return obj;     
     }
 
     @FXML
@@ -105,8 +125,14 @@ public class DepartmentFormController implements Initializable {
     public void updateDepartment() {
         txtId.setText(String.valueOf(entityes.getId()));
         txtName.setText(entityes.getName());
+            
     }
-
-
+    private void setErrorMessages(Map<String,String> errors){
+        Set<String> fields = errors.keySet();
+        
+        if(fields.contains("name")){
+            labelErroName.setText(errors.get("name"));
+        }
+    }
 
 }

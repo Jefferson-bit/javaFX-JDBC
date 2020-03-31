@@ -10,7 +10,7 @@ package gui;
  * @author crash
  */
 
-//essa interface vai permitir escuta outro objeto
+//essa interface vai permitir executa outro objeto
 public interface DataChangeListener {
     void onDataChenged();
 }
