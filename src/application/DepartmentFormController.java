@@ -13,14 +13,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import model.entities.Department;
 
-/**
- * FXML Controller class
- *
- * @author crash
- */
+
 public class DepartmentFormController implements Initializable {
-
+    
+    @FXML
+    private Department entityes;
     @FXML
     private TextField txtId;
 
@@ -45,6 +44,10 @@ public class DepartmentFormController implements Initializable {
         System.out.println("onBtCancelAction");
     }
 
+    public void setDepartment(Department entityes){
+        this.entityes = entityes;
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initializeNode();
@@ -54,6 +57,10 @@ public class DepartmentFormController implements Initializable {
         Constraints.setTextFieldInteger(txtId) ;
         Constraints.setTextFieldMaxLength(txtName, 30);
     }    
-
+    public void updateDepartment(){
+        
+        txtId.setText(String.valueOf(entityes.getId()));
+        txtName.setText(entityes.getName());
+    }
 
 }

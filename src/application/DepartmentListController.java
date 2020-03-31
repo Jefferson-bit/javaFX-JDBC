@@ -44,7 +44,8 @@ public class DepartmentListController implements Initializable {
     @FXML
     public void onBtNewAction(ActionEvent event) {
         Stage parentStage = Utils.currentStagem(event);
-        createDialogForm("DepartmentForm.fxml", parentStage);
+        Department obj = new Department();
+        createDialogForm(obj, "DepartmentForm.fxml", parentStage);
     }
     @FXML
     private ObservableList<Department> obsList;
@@ -76,11 +77,15 @@ public class DepartmentListController implements Initializable {
 
     }
 
-    public void createDialogForm(String absoluteName, Stage parentStage) {
+    public void createDialogForm(Department obj, String absoluteName, Stage parentStage) {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
             Pane pane = loader.load();
+            
+            DepartmentListController controller = loader.getController();
+            controller.setDepartmentService(service);
+            controller.updateTablwView();
             
             //instanciando um novo stage, para ser um palco na frente do outro
             Stage dialogStage = new Stage();
