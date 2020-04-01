@@ -2,16 +2,17 @@ package application;
 
 import Dados.DbIntegrityException;
 import Model.services.SellerService;
+import com.sun.javafx.logging.PlatformLogger.Level;
 import gui.Alerts;
 import gui.DataChangeListener;
 import gui.Utils;
 import java.io.IOException;
+import java.lang.System.Logger;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -46,6 +47,15 @@ public class SellerListController implements Initializable, DataChangeListener {
     private TableColumn<Seller, String> tableColumnName;
 
     @FXML
+    private TableColumn<Seller, String> tableColumnEmail;
+
+    @FXML
+    private TableColumn<Seller, Date> tableColumnBirthDate;
+
+    @FXML
+    private TableColumn<Seller, Double> tableColumnBaseSalary;
+
+    @FXML
     private TableColumn<Seller, Seller> tableColumnEDIT;
 
     @FXML
@@ -76,7 +86,12 @@ public class SellerListController implements Initializable, DataChangeListener {
         //colocando nomes nas colunas
         tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-
+        tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+        tableColumnBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+        Utils.formatTableColumnDate(tableColumnBirthDate, "dd//MM/yyyy");     
+        tableColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
+        
+        Utils.formatTableColumnDouble(tableColumnBaseSalary, 2);
         Stage stage = (Stage) Main.getMainScene().getWindow();
         tableViewSeller.prefHeightProperty().bind(stage.heightProperty());
     }
@@ -95,37 +110,36 @@ public class SellerListController implements Initializable, DataChangeListener {
 
     public void createDialogForm(Seller obj, String absoluteName, Stage parentStage) {
 
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
-//            Pane pane = loader.load();
-//            //injetando todas as dependencias 
-//            SellerFormController controller = loader.getController();
-//
-//            controller.setSeller(obj);
-//            controller.setSellerService(new SellerService());
-//            controller.subsCribleDateChangeListener(this);
-//            controller.updateFormData();
-//
-//            //instanciando um novo stage, para ser um palco na frente do outro
-//            Stage dialogStage = new Stage();
-//            //Colocando titulo na janela
-//            dialogStage.setTitle("Enter Seller data");
-//            //criamos um novo stage, então temos que criar uma nova cena. O elemento raiz sera a variavel do Pane
-//            dialogStage.setScene(new Scene(pane));
-//            //usuario não poderá redimensionar a tela
-//            dialogStage.setResizable(false);
-//            //Colocando o stage pai da janela
-//            dialogStage.initOwner(parentStage);
-//            //metodo indica se a janela vai ser modal, ou terá outro comportamento. Ela ficara travada, impedindo acesso
-//            //a outra janela
-//            dialogStage.initModality(Modality.WINDOW_MODAL);
-//            //Carregando tela do formulario
-//            dialogStage.showAndWait();
-//
-//        } catch (IOException ex) {
-//            Logger.getLogger(SellerListController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+            Pane pane = loader.load();
+            //injetando todas as dependencias 
+            SellerFormController controller = loader.getController();
 
+            controller.setSeller(obj);
+            controller.setSellerService(new SellerService());
+            controller.subsCribleDateChangeListener(this);
+            controller.updateFormData();
+
+            //instanciando um novo stage, para ser um palco na frente do outro
+            Stage dialogStage = new Stage();
+            //Colocando titulo na janela
+            dialogStage.setTitle("Enter Seller data");
+            //criamos um novo stage, então temos que criar uma nova cena. O elemento raiz sera a variavel do Pane
+            dialogStage.setScene(new Scene(pane));
+            //usuario não poderá redimensionar a tela
+            dialogStage.setResizable(false);
+            //Colocando o stage pai da janela
+            dialogStage.initOwner(parentStage);
+            //metodo indica se a janela vai ser modal, ou terá outro comportamento. Ela ficara travada, impedindo acesso
+            //a outra janela
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            //Carregando tela do formulario
+            dialogStage.showAndWait();
+
+        } catch (IOException ex) {
+           Alerts.alertShow("IO exception error", null, ex.getMessage(), Alert.AlertType.ERROR);
+        }
     }
     //esse metodo aqui, vai ser responsável por atualizar minha lista
     //temos que inserir a dependencia
@@ -177,7 +191,7 @@ public class SellerListController implements Initializable, DataChangeListener {
 
     private void removeEntity(Seller obj) {
         Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to deleted?");
-        
+
         //usando o result,get devido ao optional, ele é um objeto que carrega o outro objeto dentro dele, podendo
         //esse objeto está dentro dele ou não. Então fazemos um teste
         if (result.get() == ButtonType.OK) {
@@ -187,8 +201,7 @@ public class SellerListController implements Initializable, DataChangeListener {
             try {
                 service.remove(obj);
                 updateTableView();
-            } 
-            catch (DbIntegrityException e) {
+            } catch (DbIntegrityException e) {
                 Alerts.alertShow("Error removing object ", null, e.getMessage(), Alert.AlertType.ERROR);
             }
 
