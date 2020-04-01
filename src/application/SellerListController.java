@@ -3,12 +3,10 @@ package application;
 import Dados.DbIntegrityException;
 import Model.services.DepartmentService;
 import Model.services.SellerService;
-import com.sun.javafx.logging.PlatformLogger.Level;
 import gui.Alerts;
 import gui.DataChangeListener;
 import gui.Utils;
 import java.io.IOException;
-import java.lang.System.Logger;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -90,9 +88,9 @@ public class SellerListController implements Initializable, DataChangeListener {
         tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         tableColumnBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
         Utils.formatTableColumnDate(tableColumnBirthDate, "dd//MM/yyyy");     
-        tableColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
-        
+        tableColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));       
         Utils.formatTableColumnDouble(tableColumnBaseSalary, 2);
+        
         Stage stage = (Stage) Main.getMainScene().getWindow();
         tableViewSeller.prefHeightProperty().bind(stage.heightProperty());
     }
@@ -100,7 +98,7 @@ public class SellerListController implements Initializable, DataChangeListener {
     public void updateTableView() {
         //programação defensiva, caso o programador esquece de inserir dados no service
         if (service == null) {
-            throw new IllegalStateException("Serbvice was null");
+            throw new IllegalStateException("Service was null");
         }
         List<Seller> list = service.findAll();
         obsList = FXCollections.observableArrayList(list);

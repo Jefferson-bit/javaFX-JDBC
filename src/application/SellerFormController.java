@@ -24,8 +24,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Seller;
 import gui.DataChangeListener;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -98,9 +100,10 @@ public class SellerFormController implements Initializable {
         try {
             entityes = getFormData();
             service.saveOrUpdate(entityes);
+            notifyDataChangeListener();//quando o salvamente dos objetos for bem sucedido, temos q notificar os listener
             Utils.currentStagem(event).close();
-            //quando o salvamente dos objetos for bem sucedido, temos q notificar os listener
-            notifyDataChangeListener();
+            
+
         } catch (ValidationException e) {
             setErrorMessages(e.getErros());
         } catch (DBException e) {
@@ -121,7 +124,6 @@ public class SellerFormController implements Initializable {
         dataChangeListener.add(listener);
     }
 
-    @FXML
     private Seller getFormData() {
         Seller obj = new Seller();
 
@@ -133,14 +135,37 @@ public class SellerFormController implements Initializable {
             exception.addErrors("name", "Field can't be empty");
         }
         obj.setName(txtName.getText());
+        //testando se na coleção tem pelo menos um erro
+
+        if (txtEmail.getText() == null || txtEmail.getText().trim().equals("")) {
+            exception.addErrors("email", "Field can't be empty");
+        }
+        obj.setEmail(txtEmail.getText());
         //testando se na coleão tem pelo menos um erro
+
+        if (dpbBirthDate.getValue() == null) {
+            exception.addErrors("birthDate", "Field can't be empty");
+
+        } else {
+            Instant instant = Instant.from((dpbBirthDate.getValue().atStartOfDay(ZoneId.systemDefault())));
+            obj.setBirthDate(Date.from(instant));
+        }
+
+        if (txtBaseSalary.getText() == null || txtBaseSalary.getText().trim().equals("")) {
+            exception.addErrors("baseSalary", "Field can't be empty");
+        }
+
+        obj.setBaseSalary(Utils.tryParseToDouble(txtBaseSalary.getText()));
+
+        obj.setDepartment(comboBoxDepartment.getValue());
+
         if (exception.getErros().size() > 0) {
             throw exception;
         }
+
         return obj;
     }
 
-    @FXML
     public void onBtCancelAction(ActionEvent event) {
         Utils.currentStagem(event).close();
     }
@@ -182,19 +207,11 @@ public class SellerFormController implements Initializable {
         if (entityes.getBirthDate() != null) {
             dpbBirthDate.setValue(LocalDate.ofInstant(entityes.getBirthDate().toInstant(), ZoneId.systemDefault()));
         }
+
         if (entityes.getDepartment() == null) {
             comboBoxDepartment.getSelectionModel().selectFirst();
         } else {
             comboBoxDepartment.setValue(entityes.getDepartment());
-        }
-
-    }
-
-    private void setErrorMessages(Map<String, String> errors) {
-        Set<String> fields = errors.keySet();
-
-        if (fields.contains("name")) {
-            labelErroName.setText(errors.get("name"));
         }
     }
 
@@ -205,6 +222,15 @@ public class SellerFormController implements Initializable {
         List<Department> list = departmentService.findAll();
         obsList = FXCollections.observableArrayList(list);
         comboBoxDepartment.setItems(obsList);
+    }
+
+    private void setErrorMessages(Map<String, String> errors) {
+        Set<String> fields = errors.keySet();
+
+        labelErroName.setText(fields.contains("name") ? errors.get("name") : "");
+        labelErroEmail.setText(fields.contains("email") ? errors.get("email") : "");
+        labelErroBirthDate.setText(fields.contains("birthDate") ? errors.get("birthDate") : "");
+        labelErroBaseSalary.setText(fields.contains("baseSalary") ? errors.get("baseSalary") : "");
     }
 
     private void initializeComboBoxDepartment() {

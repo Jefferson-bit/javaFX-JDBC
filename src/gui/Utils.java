@@ -28,6 +28,14 @@ public class Utils {
         return (Stage) ((Node) event.getSource()).getScene().getWindow();
     }
 
+    public static Double tryParseToDouble(String str) {
+        try {
+            return Double.parseDouble(str);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     //ESSE METODO ELE RETORNA UM INTEGER 
     //MAS PODE SER QUE O CONTEUDO NA CAIXINHA  ELE NÃO SEJA UM NUMERO INTEIRO. AI SERÁ LANÇADO UMA EXCEÇÃO
     public static Integer tryParseToInt(String str) {
