@@ -7,6 +7,7 @@ package application;
 
 import Dados.DBException;
 import Model.exception.ValidationException;
+import Model.services.DepartmentService;
 import Model.services.SellerService;
 import gui.Alerts;
 import gui.Constraints;
@@ -23,14 +24,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Seller;
 import gui.DataChangeListener;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.util.Callback;
+import model.entities.Department;
 
 public class SellerFormController implements Initializable {
 
@@ -38,10 +45,18 @@ public class SellerFormController implements Initializable {
 
     private SellerService service;
 
+    private DepartmentService departmentService;
+
     private List<DataChangeListener> dataChangeListener = new ArrayList<>();
 
     @FXML
     private TextField txtId;
+
+    @FXML
+    private ComboBox<Department> comboBoxDepartment;
+
+    @FXML
+    private ObservableList<Department> obsList;
 
     @FXML
     private TextField txtName;
@@ -134,13 +149,15 @@ public class SellerFormController implements Initializable {
         this.entityes = entityes;
     }
 
-    public void setSellerService(SellerService service) {
+    public void setServices(SellerService service, DepartmentService departmentService) {
         this.service = service;
+        this.departmentService = departmentService;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initializeNode();
+
     }
 
     private void initializeNode() {
@@ -149,6 +166,8 @@ public class SellerFormController implements Initializable {
         Constraints.setTextFieldDouble(txtBaseSalary);
         Constraints.setTextFieldMaxLength(txtEmail, 60);
         Utils.formatDatePicker(dpbBirthDate, "dd/MM/yyyy");
+
+        initializeComboBoxDepartment();
     }
 
     public void updateFormData() {
@@ -160,9 +179,15 @@ public class SellerFormController implements Initializable {
         txtEmail.setText(entityes.getEmail());
         Locale.setDefault(Locale.US);
         txtBaseSalary.setText(String.format("%.2f", entityes.getBaseSalary()));
-        if(entityes.getBirthDate() != null){
-        dpbBirthDate.setValue(LocalDate.ofInstant(entityes.getBirthDate().toInstant(), ZoneId.systemDefault()) );
+        if (entityes.getBirthDate() != null) {
+            dpbBirthDate.setValue(LocalDate.ofInstant(entityes.getBirthDate().toInstant(), ZoneId.systemDefault()));
         }
+        if (entityes.getDepartment() == null) {
+            comboBoxDepartment.getSelectionModel().selectFirst();
+        } else {
+            comboBoxDepartment.setValue(entityes.getDepartment());
+        }
+
     }
 
     private void setErrorMessages(Map<String, String> errors) {
@@ -173,4 +198,24 @@ public class SellerFormController implements Initializable {
         }
     }
 
+    public void loadAssociatedObject() {
+        if (departmentService == null) {
+            throw new IllegalStateException("DepartmentService was null");
+        }
+        List<Department> list = departmentService.findAll();
+        obsList = FXCollections.observableArrayList(list);
+        comboBoxDepartment.setItems(obsList);
+    }
+
+    private void initializeComboBoxDepartment() {
+        Callback<ListView<Department>, ListCell<Department>> factory = lv -> new ListCell<Department>() {
+            @Override
+            protected void updateItem(Department item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getName());
+            }
+        };
+        comboBoxDepartment.setCellFactory(factory);
+        comboBoxDepartment.setButtonCell(factory.call(null));
+    }
 }

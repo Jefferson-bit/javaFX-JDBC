@@ -1,6 +1,7 @@
 package application;
 
 import Dados.DbIntegrityException;
+import Model.services.DepartmentService;
 import Model.services.SellerService;
 import com.sun.javafx.logging.PlatformLogger.Level;
 import gui.Alerts;
@@ -117,10 +118,11 @@ public class SellerListController implements Initializable, DataChangeListener {
             SellerFormController controller = loader.getController();
 
             controller.setSeller(obj);
-            controller.setSellerService(new SellerService());
+            controller.setServices(new SellerService(), new DepartmentService());
+            controller.loadAssociatedObject();
             controller.subsCribleDateChangeListener(this);
             controller.updateFormData();
-
+           
             //instanciando um novo stage, para ser um palco na frente do outro
             Stage dialogStage = new Stage();
             //Colocando titulo na janela
@@ -138,8 +140,11 @@ public class SellerListController implements Initializable, DataChangeListener {
             dialogStage.showAndWait();
 
         } catch (IOException ex) {
-           Alerts.alertShow("IO exception error", null, ex.getMessage(), Alert.AlertType.ERROR);
+            ex.printStackTrace();
+            Alerts.alertShow("IO exception error", null, ex.getMessage(), Alert.AlertType.ERROR);
         }
+        
+        
     }
     //esse metodo aqui, vai ser responsável por atualizar minha lista
     //temos que inserir a dependencia

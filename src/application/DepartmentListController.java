@@ -123,7 +123,8 @@ public class DepartmentListController implements Initializable, DataChangeListen
             dialogStage.showAndWait();
 
         } catch (IOException ex) {
-            Logger.getLogger(DepartmentListController.class.getName()).log(Level.SEVERE, null, ex);
+               ex.printStackTrace();
+            Alerts.alertShow("IO exception error", null, ex.getMessage(), Alert.AlertType.ERROR);
         }
 
     }
