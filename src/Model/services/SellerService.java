@@ -8,20 +8,20 @@ package Model.services;
 
 import java.util.List;
 import model.Dao.DaoFactory;
-import model.Dao.DepartmentDAO;
-import model.entities.Department;
+import model.Dao.SellerDao;
+import model.entities.Seller;
 
 
-public class DepartmentService {
+public class SellerService {
     
-   private DepartmentDAO dao = DaoFactory.createDepartment();
+   private SellerDao dao = DaoFactory.createSellerDao();
     
-    public List<Department> findAll(){
+    public List<Seller> findAll(){
         return dao.findAll();
     }
     //estamos inserindo ou atualizando, caso ID estiver preenchido, ele entra no else, 
     //chamando o metodo de atualização
-    public void  saveOrUpdate(Department obj){
+    public void  saveOrUpdate(Seller obj){
         if(obj.getId() == null){
             dao.insert(obj);
         }else{
@@ -29,8 +29,8 @@ public class DepartmentService {
         }
     }
     
-    public void remove(Department obj){
-        dao.deletById(obj.getId());
+    public void remove(Seller obj){
+        dao.deleteById(obj.getId());
     }
     
 }

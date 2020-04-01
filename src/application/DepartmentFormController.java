@@ -61,6 +61,7 @@ public class DepartmentFormController implements Initializable {
             entityes = getFormData();
             service.saveOrUpdate(entityes);
             Utils.currentStagem(event).close();
+            //quando o salvamente dos objetos for bem sucedido, temos q notificar os listener
             notifyDataChangeListener();
         } catch (ValidationException e) {
             setErrorMessages(e.getErros());
@@ -89,12 +90,12 @@ public class DepartmentFormController implements Initializable {
         ValidationException exception = new ValidationException("Validation Error");
 
         obj.setId(Utils.tryParseToInt(txtId.getText()));
-        //Verificando se o campo está vazio
+        //Verificando se o campo está vazio, o trim eliminia qualquer espaço em branco, no inicio ou final
         if (txtName.getText() == null || txtName.getText().trim().equals("")) {
             exception.addErrors("name", "Field can't be empty");
         }
         obj.setName(txtName.getText());
-
+        //testando se na coleão tem pelo menos um erro
         if (exception.getErros().size() > 0) {
             throw exception;
         }

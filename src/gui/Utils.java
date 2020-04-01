@@ -15,7 +15,7 @@ import javafx.stage.Stage;
  */
 public class Utils {
     
-    public static Stage  currentStagem(ActionEvent event){
+    public static Stage currentStagem(ActionEvent event){
         return  (Stage) ((Node)event.getSource()).getScene().getWindow();
     }
     

@@ -6,6 +6,7 @@
 package application;
 
 import Model.services.DepartmentService;
+import Model.services.SellerService;
 import gui.Alerts;
 import java.io.IOException;
 import java.net.URL;
@@ -43,7 +44,10 @@ public class ViewsController implements Initializable {
 
     @FXML
     public void onMenuItemSellerAction() {
-        System.out.println("Hello Selller");
+        loadView("SellerList.fxml", (SellerListController controller) -> {
+            controller.setSellerService(new SellerService());
+            controller.updateTableView();
+        });
     }
 
     @FXML
@@ -58,6 +62,7 @@ public class ViewsController implements Initializable {
     public void onMenuItemAboutAction() {
         loadView("About.fxml", x -> {
         });
+
     }
 
     @Override
