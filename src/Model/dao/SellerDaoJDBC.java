@@ -95,10 +95,10 @@ public class SellerDaoJDBC implements SellerDao {
             st = con.prepareStatement("DELETE FROM seller WHERE id =? ");
             st.setInt(1, id);
             st.executeUpdate();
-            
+
         } catch (SQLException ex) {
             throw new DBException("Erro ao excluir");
-        }finally{
+        } finally {
             Conexao.closeStatement(st);
         }
     }
@@ -178,7 +178,8 @@ public class SellerDaoJDBC implements SellerDao {
         obj.setId(rs.getInt("Id"));
         obj.setName(rs.getString("Name"));
         obj.setEmail(rs.getString("Email"));
-        obj.setBirthDate(rs.getDate("BirthDate"));
+        //Timestamp geral um sql date para nós
+        obj.setBirthDate(new java.util.Date(rs.getTimestamp("BirthDate").getTime()));
         obj.setBaseSalary(rs.getDouble("BaseSalary"));
         obj.setDepartment(dep);
         return obj;
